@@ -13,13 +13,17 @@
  *  if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307 USA
  */
+package me.zombie_striker.pixelprinter.util;
+
 import java.awt.Color;
 import java.awt.image.*;
-import java.util.*;
-
-import me.zombie_striker.pixelprinter.util.*;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
 
 /**
  * Created by Zombie_Striker on 3/30/2016
@@ -29,6 +33,11 @@ public class RGBBlockColor {
 	public static Map<MaterialData, RGBBlockValue> materialValue = new HashMap<>();
 
 	static {
+		
+		// The &3 at the end of certain values are for making sure logs and bones face upwards.
+		// RGB values with only one color are for block's whose texture's colors do not change much
+		// RGB values with four colors are for blocks whose textures vary depending on corner (e.g. Furnaces. Top is dark gray, bottom is light gray.)
+		
 		new RGBBlockValue(new Color(85, 85, 85),new Color(85, 85, 85), new Color(76, 76, 76), new Color(91, 91, 91),  Material.BEDROCK);
 		new RGBBlockValue(new Color(117, 211, 215), Material.BEACON);
 		new RGBBlockValue(new Color(146, 100, 87), Material.BRICK);
@@ -169,7 +178,13 @@ public class RGBBlockColor {
 			new RGB_1_10();
 		}
 	}
-
+	/**
+	 * This checks if the the server is running on a version higher or equal to the one specified.
+	 * Useage: upToDate(1,8) will check if the version is greater than or equal to 1.8
+	 * @param The first value (will most likely only be 1 )
+	 * @param The second value (The 8 in 1.8.3 )
+	 * @return if the server version is greater than or equal to specified version.
+	 */
 	public static boolean upToDate(int u1, int u2) {
 		String update = Bukkit.getVersion().split("MC")[1].substring(2)
 				.replace(")", "");
@@ -190,57 +205,30 @@ public class RGBBlockColor {
 		return (int1 >= u1) && (int2 >= u2);
 	}
 
-	public static MaterialData getClosestBlockValue(Color c,double d) {
-
-		int r = c.getRed();
-		int b = c.getBlue();
-		int g = c.getGreen();
-
-		double rRat = 0;
-		double gRat = 0;
-		double bRat = 0;
-
-		rRat = r;
-		gRat = g;
-		bRat = b;
-
-		double cR = 1000000;
-		double cB = 1000000;
-		double cG = 1000000;
-		Material cMat = Material.COAL_BLOCK;
-		short data = 0;
-
-		for (Entry<MaterialData, RGBBlockValue> entry : materialValue
-				.entrySet()) {
-			double tR = 0;
-			double tG = 0;
-			double tB = 0;
-			for (int i = 0; i < 4; i++) {
-				tR = +entry.getValue().rRat[i] - rRat;
-				tG = +entry.getValue().gRat[i] - gRat;
-				tB = +entry.getValue().bRat[i] - bRat;
-			}
-			tR = tR / 4;
-			tG = tG / 4;
-			tB = tB / 4;
-			if (tR < 0)
-				tR = -tR;
-			if (tG < 0)
-				tG = -tG;
-			if (tB < 0)
-				tB = -tB;
-			if ((tR * tR) + (tG * tG) + (tB * tB) < (cR * cR) + (cG * cG)
-					+ (cB * cB)) {
-				cR = tR;
-				cB = tB;
-				cG = tG;
-				cMat = entry.getKey().getMat();
-				data = entry.getKey().getData();
-			}
-		}
-		return new MaterialData(cMat, data);
+	/**
+	 * This will return the Material and durability that has the closest color to Color "c".
+	 * @param c - The color value
+	 * @return The closest material and durability.
+	 */
+	public static MaterialData getClosestBlockValue(Color c) {
+		Color[] color = new Color[4];
+		color[0]=c;
+		color[1]=c;
+		color[2]=c;
+		color[3]=c;
+		return getClosestBlockValue(color);
 	}
-
+	/**
+	 * The color value of the four closest colors. Use this if you want to preserve hard edges in images.
+	 * For the array, you need four color values. Use the following chart to understand which pixel should be at which index:
+	 * 
+	 * | 0 | 1 |
+	 * |---|---|
+	 * | 2 | 3 |
+	 * 
+	 * @param c - The color value
+	 * @return The closest material and durability.
+	 */
 	public static MaterialData getClosestBlockValue(Color c[]) {
 
 		int[] r = new int[4];
@@ -299,7 +287,20 @@ public class RGBBlockColor {
 		}
 		return new MaterialData(cMat, data);
 	}
-
+	/**
+	 * This gets all the pixel values for an image. Use this to get all the pixels for an image.
+	 * 
+	 * The first array stores the Row value (e.g. MC's "Y" value), and the second array stores the Columb value (MC's X or Z)
+	 * 
+	 * For example: If you want to get the pixel at the top left of an image, use
+	 * convertTo2DWithoutUsingGetRGB(Image)[HEIGHT][0]
+	 * 
+	 * For example: If you want to get the pixel at the bottom right of an image, use
+	 * convertTo2DWithoutUsingGetRGB(Image)[0][WIDTH]
+	 * 
+	 * @param image
+	 * @return
+	 */
 	public static Pixel[][] convertTo2DWithoutUsingGetRGB(BufferedImage image) {
 		if (image.getRaster().getDataBuffer() instanceof DataBufferByte) {
 			final byte[] pixels = ((DataBufferByte) image.getRaster()
@@ -395,6 +396,54 @@ public class RGBBlockColor {
 		return null;
 	}
 
+	/**
+	 * Creates a file with an image where each pixel represense the colorcode for a block
+	 * @param output file
+	 * @param bottomLeft corner of the image
+	 * @param topRight corner of the image
+	 */
+	@SuppressWarnings("deprecation")
+	public void createImageFromBlocks(File output, Location bottomLeft, Location topRight){
+		boolean isX = bottomLeft.getBlockZ() == topRight.getBlockZ();
+		MaterialData[][] blocks = new MaterialData[topRight.getBlockY()-bottomLeft.getBlockY()][isX?
+				Math.max(topRight.getBlockX(),bottomLeft.getBlockX())-Math.min(topRight.getBlockX(),bottomLeft.getBlockX())
+				:
+				Math.max(topRight.getBlockZ(),bottomLeft.getBlockZ())-Math.min(topRight.getBlockZ(),bottomLeft.getBlockZ())
+				];
+		for(int y = bottomLeft.getBlockY();y<topRight.getBlockY();y++){
+			if(isX){
+				for(int x = Math.min(topRight.getBlockX(),bottomLeft.getBlockX()) ; x < Math.max(topRight.getBlockX(),bottomLeft.getBlockX());x++){
+					Block t = new Location(topRight.getWorld(),x,y,topRight.getBlockZ()).getBlock();
+					blocks[y-bottomLeft.getBlockY()][x-Math.min(topRight.getBlockX(),bottomLeft.getBlockX())] = new MaterialData(t.getType(),t.getData());
+				}
+			}else{
+				for(int z = Math.min(topRight.getBlockZ(),bottomLeft.getBlockZ()) ; z < Math.max(topRight.getBlockZ(),bottomLeft.getBlockZ());z++){
+					Block t = new Location(topRight.getWorld(),topRight.getBlockX(),y,z).getBlock();
+					blocks[y-bottomLeft.getBlockY()][z-Math.min(topRight.getBlockZ(),bottomLeft.getBlockZ())] = new MaterialData(t.getType(),t.getData());					
+				}
+			}
+		}
+		createImageFromBlocks(output,blocks);
+	}
+	/**
+	 * Creates a file with an image where each pixel represense the colorcode for a block
+	 * @param output file
+	 * @param the material data for each block. first array being the Y, the second being the X or Z;
+	 */
+	public void createImageFromBlocks(File output, MaterialData[][] blocks){
+		BufferedImage canvas = new BufferedImage(blocks[0].length,blocks.length, BufferedImage.TYPE_INT_RGB);
+		for(int y = 0;y < blocks.length;y++){
+			for(int x = 0; x < blocks[0].length;x++){
+				for(MaterialData rgb : materialValue.keySet()){
+					if(rgb.m==blocks[y][x].m & rgb.data == blocks[y][x].data){
+						int col = (materialValue.get(rgb).r[0] << 16) | (materialValue.get(rgb).g[0] << 8) | materialValue.get(rgb).b[0];
+						canvas.setRGB(x,y,col);
+					}
+				}
+			}
+		}
+	}
+
 }
 
 class RGB_1_8 {
@@ -448,7 +497,6 @@ class RGB_1_10 {
 		new RGBBlockValue(new Color(124, 108, 170),new Color(126, 111, 165),new Color(124, 108, 163),new Color(123, 107, 153), Material.COMMAND_REPEATING);
 	}
 }
-
 class RGBBlockValue {
 	int[] r = new int[4];
 	int[] b = new int[4];
@@ -462,19 +510,18 @@ class RGBBlockValue {
 	short data;
 
 	public RGBBlockValue(Color c, Material mat) {
-		for (int i = 0; i < 4; i++) {
-			this.r[i] = c.getRed();
-			this.g[i] = c.getGreen();
-			this.b[i] = c.getBlue();
-			rRat[i] = r[i];
-			gRat[i] = g[i];
-			bRat[i] = b[i];
-		}
-		this.mat = mat;
-		RGBBlockColor.materialValue.put(new MaterialData(mat), this);
+		init(c,c,c,c,mat,(short)0);
 	}
 
 	public RGBBlockValue(Color c, Color c2, Color c3, Color c4, Material mat) {
+		init(c,c2,c3,c4,mat,(short)0);
+	}
+
+	@SuppressWarnings("deprecation")
+	public RGBBlockValue(Color c, Material mat, DyeColor d) {
+		init(c,c,c,c,mat,(short)(d.getData()& (short)0xFF));
+	}
+	private void init(Color c,Color c2,Color c3,Color c4,Material m, short d){
 		this.r[0] = c.getRed();
 		this.g[0] = c.getGreen();
 		this.b[0] = c.getBlue();
@@ -495,60 +542,15 @@ class RGBBlockValue {
 			gRat[i] = g[i];
 			bRat[i] = b[i];
 		}
-		this.mat = mat;
-		RGBBlockColor.materialValue.put(new MaterialData(mat), this);
-	}
-
-	public RGBBlockValue(Color c, Material mat, DyeColor d) {
-		for (int i = 0; i < 4; i++) {
-			this.r[i] = c.getRed();
-			this.g[i] = c.getGreen();
-			this.b[i] = c.getBlue();
-			rRat[i] = r[i];
-			gRat[i] = g[i];
-			bRat[i] = b[i];
-		}
-		this.mat = mat;
-		this.data = (short) d.ordinal();
-		RGBBlockColor.materialValue.put(new MaterialData(mat, data), this);
+		this.mat = m;
+		this.data = d;
+		RGBBlockColor.materialValue.put(new MaterialData(mat, data), this);		
 	}
 
 	public RGBBlockValue(Color c, Material mat, int d) {
-		for (int i = 0; i < 4; i++) {
-			this.r[i] = c.getRed();
-			this.g[i] = c.getGreen();
-			this.b[i] = c.getBlue();
-			rRat[i] = r[i];
-			gRat[i] = g[i];
-			bRat[i] = b[i];
-		}
-		this.mat = mat;
-		this.data = (short) d;
-		RGBBlockColor.materialValue.put(new MaterialData(mat, data), this);
+		init(c,c,c,c,mat,(short)d);
 	}
 	public RGBBlockValue(Color c, Color c2, Color c3, Color c4,  Material mat, int d) {
-		this.r[0] = c.getRed();
-		this.g[0] = c.getGreen();
-		this.b[0] = c.getBlue();
-		// /
-		this.r[1] = c2.getRed();
-		this.g[1] = c2.getGreen();
-		this.b[1] = c2.getBlue();
-		// /
-		this.r[2] = c3.getRed();
-		this.g[2] = c3.getGreen();
-		this.b[2] = c3.getBlue();
-		//
-		this.r[3] = c4.getRed();
-		this.g[3] = c4.getGreen();
-		this.b[3] = c4.getBlue();
-		for (int i = 0; i < 4; i++) {
-			rRat[i] = r[i];
-			gRat[i] = g[i];
-			bRat[i] = b[i];
-		}
-		this.mat = mat;
-		this.data = (short) d;
-		RGBBlockColor.materialValue.put(new MaterialData(mat, data), this);
+		init(c,c2,c3,c4,mat,(short)d);
 	}
 }
