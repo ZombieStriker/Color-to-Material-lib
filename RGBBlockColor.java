@@ -442,6 +442,12 @@ public class RGBBlockColor {
 				}
 			}
 		}
+		try {
+			ImageIO.write(canvas, "jpg", output);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
