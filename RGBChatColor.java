@@ -1,8 +1,6 @@
-package me.zombie_striker.pixelprinter.util;
 
 import java.awt.Color;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import org.bukkit.ChatColor;
 
