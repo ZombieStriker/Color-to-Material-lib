@@ -13,21 +13,15 @@
  *  if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307 USA
  */
-package me.zombie_striker.pixelprinter.util;
 
 import java.awt.Color;
 import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
-
-import me.zombie_striker.pixelprinter.data.MaterialData;
-import me.zombie_striker.pixelprinter.data.Pixel;
-
 import org.bukkit.*;
 import org.bukkit.block.Block;
 
