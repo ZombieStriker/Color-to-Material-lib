@@ -225,6 +225,123 @@ public class RGBChatColor {
 		}
 		return closest;
 	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * This gets all the pixel values for an image. Use this to get all the
+	 * pixels for an image.
+	 * 
+	 * The first array stores the Row value (e.g. MC's "Y" value), and the
+	 * second array stores the Columb value (MC's X or Z)
+	 * 
+	 * For example: If you want to get the pixel at the top left of an image,
+	 * use convertTo2DWithoutUsingGetRGB(Image)[HEIGHT][0]
+	 * 
+	 * For example: If you want to get the pixel at the bottom right of an
+	 * image, use convertTo2DWithoutUsingGetRGB(Image)[0][WIDTH]
+	 * 
+	 * @param image
+	 * @return
+	 */
+	public static Pixel[][] convertTo2DWithoutUsingGetRGB(BufferedImage image) {
+		if (image.getRaster().getDataBuffer() instanceof DataBufferByte) {
+			final byte[] pixels = ((DataBufferByte) image.getRaster()
+					.getDataBuffer()).getData();
+			final int width = image.getWidth();
+			final int height = image.getHeight();
+			final boolean hasAlphaChannel = image.getAlphaRaster() != null;
+
+			Pixel[][] result = new Pixel[height][width];
+			if (hasAlphaChannel) {
+				final int pixelLength = 4;
+				for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
+					int r = 0;
+					int b = 0;
+					int g = 0;
+					// argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
+					b += ((int) pixels[pixel + 1] & 0xff); // blue
+					g += (((int) pixels[pixel + 2] & 0xff) /* << 8 */); // green
+					r += (((int) pixels[pixel + 3] & 0xff) /* << 16 */); // red
+					result[row][col] = new Pixel(r, g, b);
+					col++;
+					if (col == width) {
+						col = 0;
+						row++;
+					}
+				}
+			} else {
+				final int pixelLength = 3;
+				for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
+					int r = 0;
+					int b = 0;
+					int g = 0;
+					// argb += -16777216; // 255 alpha
+					b += ((int) pixels[pixel] & 0xff); // blue
+					g += (((int) pixels[pixel + 1] & 0xff) /* <<8 */); // green
+					r += (((int) pixels[pixel + 2] & 0xff) /* <<16 */); // red
+					result[row][col] = new Pixel(r, g, b);
+					col++;
+					if (col == width) {
+						col = 0;
+						row++;
+					}
+				}
+			}
+
+			return result;
+		} else if (image.getRaster().getDataBuffer() instanceof DataBufferInt) {
+			final int[] pixels = ((DataBufferInt) image.getRaster()
+					.getDataBuffer()).getData();
+			final int width = image.getWidth();
+			final int height = image.getHeight();
+			final boolean hasAlphaChannel = image.getAlphaRaster() != null;
+
+			Pixel[][] result = new Pixel[height][width];
+			if (hasAlphaChannel) {
+				final int pixelLength = 4;
+				for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
+					int r = 0;
+					int b = 0;
+					int g = 0;
+					// argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
+					b += ((int) pixels[pixel + 1] & 0xff); // blue
+					g += (((int) pixels[pixel + 2] & 0xff) /* << 8 */); // green
+					r += (((int) pixels[pixel + 3] & 0xff) /* << 16 */); // red
+					result[row][col] = new Pixel(r, g, b);
+					col++;
+					if (col == width) {
+						col = 0;
+						row++;
+					}
+				}
+			} else {
+				final int pixelLength = 1;
+				for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
+					int r = 0;
+					int b = 0;
+					int g = 0;
+					int rgb = pixels[pixel];
+					r = (rgb >> 16) & 0xFF;
+					g = (rgb >> 8) & 0xFF;
+					b = rgb & 0xFF;
+					result[row][col] = new Pixel(r, g, b);
+					col++;
+					if (col == width) {
+						col = 0;
+						row++;
+					}
+				}
+			}
+
+			return result;
+		}
+		return null;
+	}
 }
 
 
@@ -267,5 +384,16 @@ class RGBValue {
 			gRat[i] = g[i];
 			bRat[i] = b[i];
 		}
+	}
+}
+class Pixel {
+	public int r;
+	public int b;
+	public int g;
+
+	public Pixel(int r, int g, int b) {
+		this.r = r;
+		this.b = b;
+		this.g = g;
 	}
 }
