@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2016 Zombie_Striker
+ *  Copyright (C) 2017 Zombie_Striker
  *
  *  This program is free software; you can redistribute it and/or modify it under the terms of the
  *  GNU General Public License as published by the Free Software Foundation; either version 2 of
@@ -13,17 +13,19 @@
  *  if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307 USA
  */
+package me.zombie_striker.pixelprinter.util;
 
 import java.awt.Color;
 import java.awt.image.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.serialization.*;
 
 /**
  * Created by Zombie_Striker on 3/30/2016
@@ -38,7 +40,8 @@ public class RGBBlockColor {
 
 	public static RGBValue getRGBFromMatData(MaterialData m, boolean topView) {
 		for (MaterialData h : materialValue.keySet()) {
-			if (h.getM() == m.getM() && h.getData() == m.getData())
+			if (h.getMaterial() == m.getMaterial()
+					&& h.getData() == m.getData())
 				return materialValue.get(h);
 		}
 		return null;
@@ -53,13 +56,13 @@ public class RGBBlockColor {
 		new RGBBlockValue(new Color(110, 89, 65), new Color(103, 94, 51),
 				new Color(119, 71, 40), new Color(99, 96, 70), "BOOKSHELF",
 				false);
-		// new RGBBlockValue(new Color(56, 56, 56), Material.CAULDRON); Though
-		// this causes see-through placed.
+		// new RGBBlockValue(new Color(56, 56, 56), Material.CAULDRON);
+		// Causes see through glitch when placed
 		new RGBBlockValue(new Color(115, 93, 59), new Color(112, 92, 64),
 				new Color(118, 97, 63), new Color(109, 102, 74), "WORKBENCH",
 				false);
 		new RGBBlockValue(new Color(109, 73, 44), "WORKBENCH", true);
-		new RGBBlockValue(new Color(13, 96, 23), "CACTUS");// breaks=====================================================================
+		// new RGBBlockValue(new Color(13, 96, 23), "CACTUS");// breaks
 		new RGBBlockValue(new Color(19, 19, 19), "COAL_BLOCK");
 		new RGBBlockValue(new Color(115, 115, 115), "COAL_ORE");
 		new RGBBlockValue(new Color(159, 165, 177), "CLAY");
@@ -176,70 +179,177 @@ public class RGBBlockColor {
 		new RGBBlockValue(new Color(137, 99, 98), new Color(130, 91, 86),
 				new Color(129, 87, 82), new Color(114, 75, 71), "QUARTZ_ORE");
 		new RGBBlockValue(new Color(70, 44, 27), "REDSTONE_LAMP_OFF");
-		new RGBBlockValue(new Color(119, 89, 55), "REDSTONE_LAMP_ON"); // ==============================================
+		new RGBBlockValue(new Color(119, 89, 55), "REDSTONE_LAMP_ON"); // ==
 		new RGBBlockValue(new Color(217, 210, 157), "SANDSTONE", false); // rough
 		new RGBBlockValue(new Color(216, 208, 157), "SANDSTONE", true); // rough
 		new RGBBlockValue(new Color(220, 212, 162), "SANDSTONE", 2, false); // smooth
-		new RGBBlockValue(new Color(240, 251, 251), "SNOW_BLOCK");// ========================================================
+		new RGBBlockValue(new Color(240, 251, 251), "SNOW_BLOCK");//
 		new RGBBlockValue(new Color(82, 62, 50), new Color(83, 63, 50),
 				new Color(88, 68, 55), new Color(87, 67, 54), "SOUL_SAND");
 		new RGBBlockValue(new Color(195, 196, 85), "SPONGE");
-		/*new RGBBlockValue(new Color(174, 100, 80), "TNT", false);// ==================================================
-		new RGBBlockValue(new Color(139, 67, 47), new Color(117, 63, 48),
-				new Color(131, 62, 43), new Color(109, 60, 47), "TNT", true);// ==================================================*/
-		//No longer wants to work
+		/*
+		 * new RGBBlockValue(new Color(174, 100, 80), "TNT", false);
+		 * RGBBlockValue(new Color(139, 67, 47), new Color(117, 63, 48), new
+		 * Color(131, 62, 43), new Color(109, 60, 47), "TNT", true);
+		 */
+		// No longer wants to work
 		new RGBBlockValue(new Color(125, 125, 125), "STONE", 0);// base
 		new RGBBlockValue(new Color(122, 122, 12), "SMOOTH_BRICK");
 		new RGBBlockValue(new Color(122, 127, 111), new Color(114, 119, 104),
 				new Color(110, 115, 101), new Color(114, 117, 108),
 				"SMOOTH_BRICK", 1);// moss
 		new RGBBlockValue(new Color(119, 119, 119), "SMOOTH_BRICK", 3);// chissle
-		new RGBBlockValue(new Color(23, 19, 19), "WOOL", DyeColor.BLACK);
-		new RGBBlockValue(new Color(43, 53, 133), "WOOL", DyeColor.BLUE);
-		new RGBBlockValue(new Color(76, 48, 30), "WOOL", DyeColor.BROWN);
-		new RGBBlockValue(new Color(49, 116, 143), "WOOL", DyeColor.CYAN);
-		new RGBBlockValue(new Color(61, 61, 61), "WOOL", DyeColor.GRAY);
-		new RGBBlockValue(new Color(55, 72, 28), "WOOL", DyeColor.GREEN);
-		new RGBBlockValue(new Color(113, 143, 203), "WOOL", DyeColor.LIGHT_BLUE);
-		new RGBBlockValue(new Color(66, 180, 58), "WOOL", DyeColor.LIME);
-		new RGBBlockValue(new Color(184, 83, 193), "WOOL", DyeColor.MAGENTA);
-		new RGBBlockValue(new Color(221, 129, 67), "WOOL", DyeColor.ORANGE);
-		new RGBBlockValue(new Color(210, 128, 158), "WOOL", DyeColor.PINK);
-		new RGBBlockValue(new Color(130, 62, 188), "WOOL", DyeColor.PURPLE);
-		new RGBBlockValue(new Color(157, 56, 51), "WOOL", DyeColor.RED);
-		new RGBBlockValue(new Color(162, 168, 168), "WOOL", DyeColor.SILVER);
-		new RGBBlockValue(new Color(232, 231, 231), "WOOL", DyeColor.WHITE);
-		new RGBBlockValue(new Color(188, 176, 42), "WOOL", DyeColor.YELLOW);
-		// Bukkit.getServer().getConsoleSender()
-		// .sendMessage(ChatColor.WHITE + "1.7 Blocks Enabled!");
-		/*
-		 * if (ReflectionUtil.isVersionHigherThan(1, 7)) {
-		 * Bukkit.getServer().getConsoleSender() .sendMessage(ChatColor.WHITE +
-		 * "1.8 Blocks Enabled!"); new RGB_1_8(); } if
-		 * (ReflectionUtil.isVersionHigherThan(1, 8)) {
-		 * Bukkit.getServer().getConsoleSender() .sendMessage(ChatColor.WHITE +
-		 * "1.9 Blocks Enabled!"); new RGB_1_9(); } if
-		 * (ReflectionUtil.isVersionHigherThan(1, 9)) {
-		 * Bukkit.getServer().getConsoleSender() .sendMessage(ChatColor.WHITE +
-		 * "1.10 Blocks Enabled!"); new RGB_1_10(); } if
-		 * (ReflectionUtil.isVersionHigherThan(1, 10)) {
-		 * Bukkit.getServer().getConsoleSender() .sendMessage(ChatColor.WHITE +
-		 * "1.11 Blocks Enabled!"); new RGB_1_11(); }
-		 */
+		if (!isVersionHigherThan(1, 12)) {
+			new RGBBlockValue(new Color(23, 19, 19), "WOOL", DyeColor.BLACK);
+			new RGBBlockValue(new Color(43, 53, 133), "WOOL", DyeColor.BLUE);
+			new RGBBlockValue(new Color(76, 48, 30), "WOOL", DyeColor.BROWN);
+			new RGBBlockValue(new Color(49, 116, 143), "WOOL", DyeColor.CYAN);
+			new RGBBlockValue(new Color(61, 61, 61), "WOOL", DyeColor.GRAY);
+			new RGBBlockValue(new Color(55, 72, 28), "WOOL", DyeColor.GREEN);
+			new RGBBlockValue(new Color(113, 143, 203), "WOOL",
+					DyeColor.LIGHT_BLUE);
+			new RGBBlockValue(new Color(66, 180, 58), "WOOL", DyeColor.LIME);
+			new RGBBlockValue(new Color(184, 83, 193), "WOOL", DyeColor.MAGENTA);
+			new RGBBlockValue(new Color(221, 129, 67), "WOOL", DyeColor.ORANGE);
+			new RGBBlockValue(new Color(210, 128, 158), "WOOL", DyeColor.PINK);
+			new RGBBlockValue(new Color(130, 62, 188), "WOOL", DyeColor.PURPLE);
+			new RGBBlockValue(new Color(157, 56, 51), "WOOL", DyeColor.RED);
+			new RGBBlockValue(new Color(162, 168, 168), "WOOL", DyeColor.SILVER);
+			new RGBBlockValue(new Color(232, 231, 231), "WOOL", DyeColor.WHITE);
+			new RGBBlockValue(new Color(188, 176, 42), "WOOL", DyeColor.YELLOW);
+		} else {
+			new RGBBlockValue(new Color(22, 22, 27), "WOOL", DyeColor.BLACK);
+			new RGBBlockValue(new Color(53, 57, 158), "WOOL", DyeColor.BLUE);
+			new RGBBlockValue(new Color(116, 73, 41), "WOOL", DyeColor.BROWN);
+			new RGBBlockValue(new Color(21, 138, 146), "WOOL", DyeColor.CYAN);
+			new RGBBlockValue(new Color(63, 68, 72), "WOOL", DyeColor.GRAY);
+			new RGBBlockValue(new Color(85, 109, 28), "WOOL", DyeColor.GREEN);
+			new RGBBlockValue(new Color(58, 175, 217), "WOOL",
+					DyeColor.LIGHT_BLUE);
+			new RGBBlockValue(new Color(111, 184, 26), "WOOL", DyeColor.LIME);
+			new RGBBlockValue(new Color(189, 69, 190), "WOOL", DyeColor.MAGENTA);
+			new RGBBlockValue(new Color(241, 118, 19), "WOOL", DyeColor.ORANGE);
+			new RGBBlockValue(new Color(239, 141, 172), "WOOL", DyeColor.PINK);
+			new RGBBlockValue(new Color(122, 42, 172), "WOOL", DyeColor.PURPLE);
+			new RGBBlockValue(new Color(161, 40, 35), "WOOL", DyeColor.RED);
+			new RGBBlockValue(new Color(142, 142, 135), "WOOL", DyeColor.SILVER);
+			new RGBBlockValue(new Color(232, 235, 235), "WOOL", DyeColor.WHITE);
+			new RGBBlockValue(new Color(249, 196, 38), "WOOL", DyeColor.YELLOW);
+
+		}
+		new RGBBlockValue(new Color(9, 11, 16), "CONCRETE", DyeColor.BLACK);
+		new RGBBlockValue(new Color(45, 47, 144), "CONCRETE", DyeColor.BLUE);
+		new RGBBlockValue(new Color(97, 60, 32), "CONCRETE", DyeColor.BROWN);
+		new RGBBlockValue(new Color(22, 119, 136), "CONCRETE", DyeColor.CYAN);
+		new RGBBlockValue(new Color(55, 58, 62), "CONCRETE", DyeColor.GRAY);
+		new RGBBlockValue(new Color(72, 92, 37), "CONCRETE", DyeColor.GREEN);
+		new RGBBlockValue(new Color(36, 137, 199), "CONCRETE",
+				DyeColor.LIGHT_BLUE);
+		new RGBBlockValue(new Color(94, 169, 25), "CONCRETE", DyeColor.LIME);
+		new RGBBlockValue(new Color(170, 49, 160), "CONCRETE", DyeColor.MAGENTA);
+		new RGBBlockValue(new Color(225, 97, 1), "CONCRETE", DyeColor.ORANGE);
+		new RGBBlockValue(new Color(214, 102, 143), "CONCRETE", DyeColor.PINK);
+		new RGBBlockValue(new Color(101, 32, 157), "CONCRETE", DyeColor.PURPLE);
+		new RGBBlockValue(new Color(143, 33, 33), "CONCRETE", DyeColor.RED);
+		new RGBBlockValue(new Color(125, 125, 115), "CONCRETE", DyeColor.SILVER);
+		new RGBBlockValue(new Color(207, 213, 214), "CONCRETE", DyeColor.WHITE);
+		new RGBBlockValue(new Color(241, 176, 22), "CONCRETE", DyeColor.YELLOW);
+
+		new RGBBlockValue(new Color(26, 27, 32), "CONCRETE_POWDER",
+				DyeColor.BLACK);
+		new RGBBlockValue(new Color(71, 74, 168), "CONCRETE_POWDER",
+				DyeColor.BLUE);
+		new RGBBlockValue(new Color(125, 85, 54), "CONCRETE_POWDER",
+				DyeColor.BROWN);
+		new RGBBlockValue(new Color(37, 146, 157), "CONCRETE_POWDER",
+				DyeColor.CYAN);
+		new RGBBlockValue(new Color(78, 82, 86), "CONCRETE_POWDER",
+				DyeColor.GRAY);
+		new RGBBlockValue(new Color(98, 120, 45), "CONCRETE_POWDER",
+				DyeColor.GREEN);
+		new RGBBlockValue(new Color(74, 180, 213), "CONCRETE_POWDER",
+				DyeColor.LIGHT_BLUE);
+		new RGBBlockValue(new Color(125, 190, 42), "CONCRETE_POWDER",
+				DyeColor.LIME);
+		new RGBBlockValue(new Color(193, 84, 185), "CONCRETE_POWDER",
+				DyeColor.MAGENTA);
+		new RGBBlockValue(new Color(228, 132, 32), "CONCRETE_POWDER",
+				DyeColor.ORANGE);
+		new RGBBlockValue(new Color(229, 153, 182), "CONCRETE_POWDER",
+				DyeColor.PINK);
+		new RGBBlockValue(new Color(131, 55, 178), "CONCRETE_POWDER",
+				DyeColor.PURPLE);
+		new RGBBlockValue(new Color(169, 55, 51), "CONCRETE_POWDER",
+				DyeColor.RED);
+		new RGBBlockValue(new Color(155, 155, 148), "CONCRETE_POWDER",
+				DyeColor.SILVER);
+		new RGBBlockValue(new Color(227, 229, 229), "CONCRETE_POWDER",
+				DyeColor.WHITE);
+		new RGBBlockValue(new Color(233, 199, 54), "CONCRETE_POWDER",
+				DyeColor.YELLOW);
+
+		// ============================================================================================
+		// TODO: Check if these enum values are correct when 1.12 officially
+		// comes out.
+		new RGBBlockValue(new Color(226, 228, 186), new Color(190, 214, 208),
+				new Color(191, 215, 208), new Color(134, 194, 224),
+				"WHITE_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(85, 36, 39), new Color(64, 22, 23),
+				new Color(65, 22, 23), new Color(62, 41, 45),
+				"BLACK_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(49, 71, 146), new Color(46, 61, 135),
+				new Color(49, 64, 141), new Color(51, 75, 156),
+				"BLUE_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(158, 103, 65), new Color(118, 112, 95),
+				new Color(117, 111, 95), new Color(107, 98, 81),
+				"BROWN_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(68, 130, 135), new Color(38, 123, 131),
+				new Color(35, 85, 93), new Color(65, 135, 141),
+				"CYAN_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(87, 93, 96), new Color(75, 84, 88),
+				new Color(83, 93, 96), new Color(90, 95, 98),
+				"GRAY_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(135, 153, 105), new Color(110, 139, 52),
+				new Color(110, 138, 51), new Color(103, 131, 48),
+				"GREEN_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(74, 138, 195), new Color(94, 169, 212),
+				new Color(98, 155, 204), new Color(119, 199, 228),
+				"LIGHT_BLUE_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(133, 197, 46), new Color(178, 198, 60),
+				new Color(178, 199, 61), new Color(163, 197, 51),
+				"LIME_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(207, 101, 188), new Color(208, 103, 189),
+				new Color(205, 96, 188), new Color(206, 99, 190),
+				"MAGENTA_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(193, 151, 77), new Color(132, 155, 112),
+				new Color(133, 153, 111), new Color(44, 173, 170),
+				"ORANGE_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(232, 157, 181), new Color(242, 155, 184),
+				new Color(242, 154, 184), new Color(232, 157, 182),
+				"PINK_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(120, 62, 160), new Color(104, 46, 143),
+				new Color(104, 46, 143), new Color(113, 42, 162),
+				"PURPLE_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(168, 45, 41), new Color(179, 54, 49),
+				new Color(195, 70, 61), new Color(190, 68, 59),
+				"RED_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(153, 173, 175), new Color(146, 163, 165),
+				new Color(121, 159, 161), new Color(157, 174, 176),
+				"SILVER_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(226, 228, 186), new Color(190, 214, 208),
+				new Color(191, 215, 208), new Color(134, 194, 224),
+				"WHITE_GLAZED_TERRACOTTA");
+		new RGBBlockValue(new Color(255, 222, 118), new Color(239, 196, 87),
+				new Color(239, 196, 86), new Color(213, 165, 76),
+				"YELLOW_GLAZED_TERRACOTTA");
 
 		// 1.8
-		new RGBBlockValue(new Color(153, 114, 100), "STONE", 1);// gran
-		// hard
-		new RGBBlockValue(new Color(141, 109, 99), "STONE", 2);// gran
-		// smooth
-		new RGBBlockValue(new Color(180, 180, 183), "STONE", 3);// dorite
-		// hard
-		new RGBBlockValue(new Color(183, 183, 186), "STONE", 4);// dorite
-		// smooth
-		new RGBBlockValue(new Color(131, 131, 131), "STONE", 5);// ander
-		// hard
-		new RGBBlockValue(new Color(133, 133, 135), "STONE", 6);// ander
-		// smooth
+		new RGBBlockValue(new Color(153, 114, 100), "STONE", 1);// gran-hard
+		new RGBBlockValue(new Color(141, 109, 99), "STONE", 2);// gran-smooth
+		new RGBBlockValue(new Color(180, 180, 183), "STONE", 3);// dorite-hard
+		new RGBBlockValue(new Color(183, 183, 186), "STONE", 4);// dorite-smooth
+		new RGBBlockValue(new Color(131, 131, 131), "STONE", 5);// ander-hard
+		new RGBBlockValue(new Color(133, 133, 135), "STONE", 6);// ander-smooth
 
 		new RGBBlockValue(new Color(161, 119, 19), new Color(162, 118, 19),
 				new Color(158, 119, 19), new Color(158, 118, 18), "HAY_BLOCK",
@@ -282,7 +392,14 @@ public class RGBBlockColor {
 				"COMMAND_REPEATING");
 
 		// 1.11
-		new RGBBlockValue(new Color(62, 59, 59), "OBSERVER", false);
+
+		// new RGBBlockValue(new Color(62, 59, 59), "OBSERVER", false);
+		/**
+		 * Depending on which way you choose (north-south or east-west), the
+		 * sides and colors may be drastically different (one side is all dark
+		 * gray the other has a light gray stip in the middle). Removing for now
+		 * since I cannot determine which side a user chooses.
+		 */
 
 	}
 
@@ -440,39 +557,28 @@ public class RGBBlockColor {
 			final boolean hasAlphaChannel = image.getAlphaRaster() != null;
 
 			Pixel[][] result = new Pixel[height][width];
+			int pixelLength = 0;
+			int offset = 0;
 			if (hasAlphaChannel) {
-				final int pixelLength = 4;
-				for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
-					int r = 0;
-					int b = 0;
-					int g = 0;
-					// argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
-					b += ((int) pixels[pixel + 1] & 0xff); // blue
-					g += (((int) pixels[pixel + 2] & 0xff) /* << 8 */); // green
-					r += (((int) pixels[pixel + 3] & 0xff) /* << 16 */); // red
-					result[row][col] = new Pixel(r, g, b);
-					col++;
-					if (col == width) {
-						col = 0;
-						row++;
-					}
-				}
+				pixelLength = 4;
+				offset = 1;
 			} else {
-				final int pixelLength = 3;
-				for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
-					int r = 0;
-					int b = 0;
-					int g = 0;
-					// argb += -16777216; // 255 alpha
-					b += ((int) pixels[pixel] & 0xff); // blue
-					g += (((int) pixels[pixel + 1] & 0xff) /* <<8 */); // green
-					r += (((int) pixels[pixel + 2] & 0xff) /* <<16 */); // red
-					result[row][col] = new Pixel(r, g, b);
-					col++;
-					if (col == width) {
-						col = 0;
-						row++;
-					}
+				pixelLength = 3;
+			}
+
+			for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
+				int r = 0;
+				int b = 0;
+				int g = 0;
+				// argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
+				b += ((int) pixels[pixel + offset] & 0xff); // blue
+				g += (((int) pixels[pixel + offset + 1] & 0xff) /* << 8 */); // green
+				r += (((int) pixels[pixel + offset + 2] & 0xff) /* << 16 */); // red
+				result[row][col] = new Pixel(r, g, b);
+				col++;
+				if (col == width) {
+					col = 0;
+					row++;
 				}
 			}
 
@@ -591,7 +697,7 @@ public class RGBBlockColor {
 		for (int y = 0; y < blocks.length; y++) {
 			for (int x = 0; x < blocks[0].length; x++) {
 				for (MaterialData rgb : materialValue.keySet()) {
-					if (rgb.getM() == blocks[y][x].getM()
+					if (rgb.getMaterial() == blocks[y][x].getMaterial()
 							&& rgb.getData() == blocks[y][x].getData()) {
 						int col = (materialValue.get(rgb).r[0] << 16)
 								| (materialValue.get(rgb).g[0] << 8)
@@ -604,25 +710,31 @@ public class RGBBlockColor {
 		try {
 			ImageIO.write(canvas, "jpg", output);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	public static class Pixel {
+		public int r;
+		public int b;
+		public int g;
+
+		public Pixel(int r, int g, int b) {
+			this.r = r;
+			this.b = b;
+			this.g = g;
 		}
 	}
 
 }
 
 class RGBValue {
-	int[] r = new int[4];
-	int[] b = new int[4];
-	int[] g = new int[4];
-
-	public double[] rRat = new double[4];
-	public double[] gRat = new double[4];
-	public double[] bRat = new double[4];
+	protected int[] r = new int[4];
+	protected int[] b = new int[4];
+	protected int[] g = new int[4];
 
 	public RGBValue(Color c) {
 		init(c, c, c, c);
-
 	}
 
 	public RGBValue(Color c, Color c2, Color c3, Color c4) {
@@ -641,15 +753,10 @@ class RGBValue {
 		this.r[2] = c3.getRed();
 		this.g[2] = c3.getGreen();
 		this.b[2] = c3.getBlue();
-		//
+		// /
 		this.r[3] = c4.getRed();
 		this.g[3] = c4.getGreen();
 		this.b[3] = c4.getBlue();
-		for (int i = 0; i < 4; i++) {
-			rRat[i] = r[i];
-			gRat[i] = g[i];
-			bRat[i] = b[i];
-		}
 	}
 }
 
@@ -751,5 +858,55 @@ class RGBBlockValue extends RGBValue {
 			dyecolor = (byte) ReflectionUtil.invokeMethod(d, "getData", null);
 		RGBBlockColor.materialValue.put(
 				new MaterialData(Material.matchMaterial(mat), dyecolor), this);
+	}
+}
+
+class MaterialData implements ConfigurationSerializable {
+
+	private Material m;
+	private byte data;
+
+	public MaterialData(Material m, byte data) {
+		ConfigurationSerialization.registerClass(MaterialData.class);
+		this.setMaterial(m);
+		this.data = data;
+	}
+
+	public MaterialData(Material m) {
+		ConfigurationSerialization.registerClass(MaterialData.class);
+		this.setMaterial(m);
+		this.data = 0;
+	}
+
+	public static MaterialData getMatDataByTypes(Material mat, byte data) {
+		for (MaterialData key : RGBBlockColor.materialValue.keySet())
+			if (key.getData() == data && key.getMaterial() == mat)
+				return key;
+		return null;
+	}
+
+	public byte getData() {
+		return data;
+	}
+
+	public Material getMaterial() {
+		return m;
+	}
+
+	public MaterialData(Map<String, Object> data) {
+		this.setMaterial(Material.valueOf((String) data.get("m")));
+		this.data = Byte.parseByte((String) data.get("data"));
+	}
+
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("m", this.getMaterial().toString());
+		data.put("data", this.data + "");
+		return data;
+	}
+
+	public void setMaterial(Material m) {
+		this.m = m;
 	}
 }
