@@ -5,7 +5,7 @@ public class SkinCreator {
 	public static BufferedImage getSkin(String uuid) throws NullPointerException{
 		try{
 			StringBuilder code = new StringBuilder();
-			InputStreamReader is = new InputStreamReader(new URL("https://sessionserver.mojang.com/session/minecraft/profile/"+uuid).openStream());
+			InputStreamReader is = new InputStreamReader(new URL("https://sessionserver.mojang.com/session/minecraft/profile/"+uuid.replace("-", "")).openStream());
 			int charI = 0;
 			while((charI = is.read())!=-1){
 				code.append(((char)charI));
