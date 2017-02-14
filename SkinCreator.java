@@ -1,3 +1,4 @@
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
@@ -5,8 +6,9 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
+import me.zombie_striker.pixelprinter.util.RGBBlockColor.Pixel;
+
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 public class SkinCreator {
 
@@ -39,36 +41,31 @@ public class SkinCreator {
 		Direction right = null;
 		Direction flat = null;
 		switch (front) {
-		
-		//Quality hack-work here! This is what you get for thinking that east is south!
 
 		case UP_SOUTH:
-			front=Direction.UP_EAST;
+			back = Direction.UP_NORTH;
+			right = Direction.UP_WEST;
+			left = Direction.UP_EAST;
+			flat = Direction.FLAT_SOUTHWEST;			
+			break;
+		case UP_NORTH:
+			back = Direction.UP_SOUTH;
+			right = Direction.UP_EAST;
+			left = Direction.UP_WEST;
+			flat = Direction.FLAT_NORTHEAST;
+			
+			break;
+		case UP_EAST:
 			back = Direction.UP_WEST;
 			right = Direction.UP_SOUTH;
 			left = Direction.UP_NORTH;
 			flat = Direction.FLAT_SOUTHEAST;
 			break;
-		case UP_NORTH:
-			front=Direction.UP_WEST;
+		case UP_WEST:
 			back = Direction.UP_EAST;
 			right = Direction.UP_NORTH;
 			left = Direction.UP_SOUTH;
 			flat = Direction.FLAT_NORTHWEST;
-			break;
-		case UP_EAST:
-			front = Direction.UP_SOUTH;
-			back = Direction.UP_NORTH;
-			right = Direction.UP_WEST;
-			left = Direction.UP_EAST;
-			flat = Direction.FLAT_SOUTHWEST;
-			break;
-		case UP_WEST:
-			front = Direction.UP_NORTH;
-			back = Direction.UP_SOUTH;
-			right = Direction.UP_EAST;
-			left = Direction.UP_WEST;
-			flat = Direction.FLAT_NORTHEAST;
 			break;
 		default:
 			break;
@@ -77,10 +74,10 @@ public class SkinCreator {
 		
 		// legs (left)
 		{
-			a(-3, 0, 2, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(0, 32 - 12, 4, 12),24,false));
-			a(0, 0, -1, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(0+8, 32 - 12, 4, 12),24,false));
-			a(-3, 0, 2, loc, front,front, RGBBlockColor.createResizedCopy(skin.getSubimage(0+4, 32 - 12, 4, 12),24,false));
-			a(0, 0, -1, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(0+12, 32 - 12, 4, 12),24,false));
+			a(2, 0, -3, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(0, 32 - 12, 4, 12),24,false));
+			a(-1, 0, 0, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(0+8, 32 - 12, 4, 12),24,false));
+			a(2, 0, -3, loc, front,front, RGBBlockColor.createResizedCopy(skin.getSubimage(0+4, 32 - 12, 4, 12),24,false));
+			a(-1, 0, 0, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(0+12, 32 - 12, 4, 12),24,false));
 		}
 
 		// Legs (right)
@@ -90,17 +87,17 @@ public class SkinCreator {
 			if(skin.getHeight()==32){
 				x=0;y=32;
 			}
-			a(1, 0, 2, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x, y - 12, 4, 12),24,false));
-			a(4, 0, -1, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+8, y - 12, 4, 12),24,false));
-			a(1, 0, 2, loc, front,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+4, y - 12, 4, 12),24,false));
-			a(4, 0, -1, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+12, y - 12, 4, 12),24,false));
+			a(2, 0, 1, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x, y - 12, 4, 12),24,false));
+			a(-1, 0, 4, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+8, y - 12, 4, 12),24,false));
+			a(2, 0, 1, loc, front,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+4, y - 12, 4, 12),24,false));
+			a(-1, 0, 4, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+12, y - 12, 4, 12),24,false));
 		}
 		// chest
 		{
-			a(-3, 12, 2, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(16, 20, 4, 12),24,false));
-			a(4, 12, -1, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(16+12,20, 4, 12),24,false));
-			a(-2, 12, 2, loc, front,front, RGBBlockColor.createResizedCopy(skin.getSubimage(16+4,20, 8, 12),24,false));
-			a(4, 12, -1, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(16+16,20, 8, 12),24,false));
+			a(2, 12,-3, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(16, 20, 4, 12),24,false));
+			a(-1, 12, 4, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(16+12,20, 4, 12),24,false));
+			a(2, 12, -2, loc, front,front, RGBBlockColor.createResizedCopy(skin.getSubimage(16+4,20, 8, 12),24,false));
+			a(-1, 12, 4, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(16+16,20, 8, 12),24,false));
 		}
 		//head
 		{
@@ -110,17 +107,17 @@ public class SkinCreator {
 			a(-3, 24, -3, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(0,8, 8, 8),16,false));
 			a(4, 24, 4, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(16, 8, 8, 8),16,false));
 			a(-3, 24, 4, loc, front,front, RGBBlockColor.createResizedCopy(skin.getSubimage(8,8, 8, 8),16,false));
-			a(4, 24, -3, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(24, 8, 8, 8),16,false));
+			a(-3, 24, 4, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(24, 8, 8, 8),16,false));
 		}
 		// arm (left)
 		{
-			a(-3+8, 23, -1, loc, flat,front, RGBBlockColor.createResizedCopy(skin.getSubimage(40+4, 16, 4, 4),8,false));
-			a(-3+8, 12, -1, loc, flat, front,RGBBlockColor.createResizedCopy(skin.getSubimage(40+4+4, 16, 4, 4),8,false));
+			a(-1, 23, -3+8, loc, flat,front, RGBBlockColor.createResizedCopy(skin.getSubimage(40+4, 16, 4, 4),8,false));
+			a(-1, 12, -3+8, loc, flat, front,RGBBlockColor.createResizedCopy(skin.getSubimage(40+4+4, 16, 4, 4),8,false));
 			
-			a(-3+8, 12, 2, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(40, 20, 4, 12),24,false));
-			a(0+8, 12, -1, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(40+8, 20, 4, 12),24,false));
-			a(-3+8, 12, 2, loc, front,front, RGBBlockColor.createResizedCopy(skin.getSubimage(40+4, 20, 4, 12),24,false));
-			a(0+8, 12, -1, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(40+12, 20, 4, 12),24,false));
+			a(2, 12, -3+8, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(40, 20, 4, 12),24,false));
+			a(-1, 12, 8, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(40+8, 20, 4, 12),24,false));
+			a(2, 12, -3+8, loc, front,front, RGBBlockColor.createResizedCopy(skin.getSubimage(40+4, 20, 4, 12),24,false));
+			a(-1, 12, 8, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(40+12, 20, 4, 12),24,false));
 		}
 		// arm (right)
 		{
@@ -129,13 +126,13 @@ public class SkinCreator {
 			if(skin.getHeight()==32){
 				x=32;y=20;
 			}
-			a(-3-4, 23, -1, loc, flat,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+4, y-4, 4, 4),8,false));
-			a(-3-4, 12, -1, loc, flat,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+4+4, y-4, 4, 4),8,false));
+			a(-1, 23, -3-4, loc, flat,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+4, y-4, 4, 4),8,false));
+			a(-1, 12, -3-4, loc, flat,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+4+4, y-4, 4, 4),8,false));
 			
-			a(-3-4, 12, 2, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x, y, 4, 12),24,false));
-			a(0-4, 12, -1, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+8,y , 4, 12),24,false));
-			a(-3-4, 12, -1, loc, front, front,RGBBlockColor.createResizedCopy(skin.getSubimage(x+4,y, 4, 12),24,false));
-			a(0-4, 12, 2, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+12, y, 4, 12),24,false));
+			a(2, 12, -3+8, loc, left,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x, y, 4, 12),24,false));
+			a(-1, 12, -4, loc, right,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+8,y , 4, 12),24,false));
+			a(-1, 12, -3-4, loc, front, front,RGBBlockColor.createResizedCopy(skin.getSubimage(x+4,y, 4, 12),24,false));
+			a(2, 12, -4, loc, back,front, RGBBlockColor.createResizedCopy(skin.getSubimage(x+12, y, 4, 12),24,false));
 		}
 	}
 	private static void a(int x,int y, int z, Location loc,Direction d,Direction f, BufferedImage skin2){
@@ -162,9 +159,6 @@ public class SkinCreator {
 			return start.clone().add(-xoff, yoff, -zoff);
 		}
 		return start.clone().add(xoff,yoff,zoff);
-	}
-
-	public void createImage(Player p, BufferedImage bi, String dir, int height) {
 	}
 
 }
